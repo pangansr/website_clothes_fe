@@ -25,7 +25,7 @@ const SearchResults = ({
                         key={result._id}
                         className="w-full hover:bg-gray-100 p-2 cursor-pointer"
                     >
-                        <Avatar size="sm" src={result.productImg.url} />
+                        <Avatar size="sm" src={result.productImg[0].url} />
                         <p
                             key={result._id}
                             onClick={() => handleClick(result._id)}

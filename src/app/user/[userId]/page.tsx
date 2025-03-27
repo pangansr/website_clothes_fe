@@ -42,7 +42,7 @@ const UserProfilePage = () => {
 
     // Seller Details
     const userDetailsQuery = useQuery({
-        queryKey: ["user", paramsId],
+        queryKey: ["users", paramsId],
         queryFn: () => fetchUserDetails(paramsId),
     });
     const userDetails: UserType = userDetailsQuery?.data;
@@ -56,7 +56,7 @@ const UserProfilePage = () => {
 
     // Get seller followers
     const getFollowersQuery = useQuery({
-        queryKey: ["user", "followers", paramsId],
+        queryKey: ["users", "followers", paramsId],
         queryFn: () => getAllFollowers(paramsId),
         enabled: userDetailsQuery?.data != undefined,
     });
@@ -72,7 +72,7 @@ console.log("param",paramsId);
     // Get seller following
     const getFollowingQuery = useQuery({
         
-        queryKey: ["user", "following", paramsId],
+        queryKey: ["users", "following", paramsId],
         queryFn: () => getAllFollowing(paramsId),
         enabled: userDetailsQuery?.data != undefined,
     });
@@ -85,7 +85,7 @@ console.log("param",paramsId);
 
     const isAlreadyFollowed = Array.isArray(getFollowersQuery.data) 
     ? getFollowersQuery.data.find(
-        (follower: { _id: string; firstName: string; lastName: string }) =>
+        (follower: { _id: string; username: string; }) =>
             follower._id === accountDetails?._id
     ) 
     : undefined;
@@ -95,7 +95,7 @@ console.log("param",paramsId);
         mutationFn: () => followUser(paramsId),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["user", "followers", paramsId],
+                queryKey: ["users", "followers", paramsId],
             });
 
             toast({
@@ -162,12 +162,12 @@ console.log("param",paramsId);
             <div className="w-[85vw] 2xl:w-[65vw] min-h-screen flex flex-col items-center p-4">
                 <div className="w-full flex items-center p-4 mt-4">
                     <HStack spacing={4}>
-                        <Avatar name={userDetails?.firstName} size="xl" />
+                        <Avatar name={userDetails?.username} size="xl" />
                         <div>
                             <HStack>
                                 <h1 className="text-2xl font-bold">
-                                    {userDetails?.firstName}{" "}
-                                    {userDetails?.lastName}
+                                    {userDetails?.username}{" "}
+                              
                                 </h1>
                                 <p className="text-gray-600">
                                     @{userDetails?.username}
@@ -175,13 +175,13 @@ console.log("param",paramsId);
                             </HStack>
                             <HStack spacing={4} ml={1}>
                                 <p className="text-gray-600 font-medium text-sm">
-                                    Following:{" "}
+                                    Đang theo dõi:{" "}
                                     <span className="text-blue-600">
                                         {getFollowingQuery.data?.length}
                                     </span>
                                 </p>
                                 <p className="text-gray-600 font-medium text-sm">
-                                    Followers:{" "}
+                                    Người theo dõi:{" "}
                                     <span className="text-blue-600">
                                         {" "}
                                         {getFollowersQuery.data?.length}
@@ -203,7 +203,7 @@ console.log("param",paramsId);
                                 rounded="full"
                                 px={8}
                             >
-                                Edit Profile
+                                Chỉnh sửa thông tin
                             </Button>
                             <Button
                                 leftIcon={<BsPlus size={26} />}
@@ -211,7 +211,7 @@ console.log("param",paramsId);
                                 rounded="full"
                                 onClick={addProductModalDisclosure?.onOpen}
                             >
-                                Add product
+                                Thêm sản phẩm
                             </Button>
                         </HStack>
                     ) : (
@@ -227,7 +227,7 @@ console.log("param",paramsId);
                                     }
                                     isLoading={unfollowUserMutation?.isLoading}
                                 >
-                                    Unfollow
+                                    Hủy theo dõi
                                 </Button>
                             ) : (
                                 <Button
@@ -238,7 +238,7 @@ console.log("param",paramsId);
                                     onClick={() => followUserMutation.mutate()}
                                     isLoading={followUserMutation?.isLoading}
                                 >
-                                    Follow
+                                    Theo dõi
                                 </Button>
                             )}
                             <Button
@@ -255,19 +255,19 @@ console.log("param",paramsId);
                 </div>
                 <div className="w-full flex items-center justify-around p-6 mt-4 mb-6 rounded-lg bg-gray-50 shadow">
                     <p className="font-medium">
-                        Location:{" "}
+                        Vị trí:{" "}
                         <span className="text-blue-600">
                             {userDetails?.location}
                         </span>
                     </p>
                     <p className="font-medium">
-                        Total Products:{" "}
+                        Tổng sản phẩm:{" "}
                         <span className="text-blue-600">
                             {productsQuery?.data?.length}
                         </span>
                     </p>
                     <p className="font-medium">
-                        Total Sales:{" "}
+                        Tổng số lượng đã bán:{" "}
                         <span className="text-blue-600">
                             {" "}
                             {userDetails?.totalSales?.toFixed(2)}
@@ -277,9 +277,9 @@ console.log("param",paramsId);
 
                 <Tabs isFitted variant="line" w="full">
                     <TabList mb={6}>
-                        <Tab fontWeight="medium">Products</Tab>
-                        <Tab fontWeight="medium">Others</Tab>
-                        <Tab fontWeight="medium">Others</Tab>
+                        <Tab fontWeight="medium">Sản phẩm</Tab>
+                        <Tab fontWeight="medium">Khác</Tab>
+                        <Tab fontWeight="medium">Khác</Tab>
                     </TabList>
                     <TabPanels>
                         <TabPanel p={0}>
@@ -295,10 +295,10 @@ console.log("param",paramsId);
                             </div>
                         </TabPanel>
                         <TabPanel>
-                            <p>two!</p>
+                            <p>2!</p>
                         </TabPanel>
                         <TabPanel>
-                            <p>three!</p>
+                            <p>3!</p>
                         </TabPanel>
                     </TabPanels>
                 </Tabs>

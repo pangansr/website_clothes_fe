@@ -24,7 +24,7 @@ const FollowingPage = () => {
         <div className="w-[85vw] 2xl:w-[60vw] min-h-screen flex flex-col items-center p-6 mt-4 bg-white rounded-lg shadow">
             <p className="text-xl font-semibold mb-8 mt-4">Following</p>
             {followingList?.length <= 0 && (
-                <p>You dont follow any seller yet</p>
+                <p>Bạn chưa theo dõi ai</p>
             )}
             <div className="w-full grid grid-cols-3 justify-items-center gap-6">
                 {followingList?.map((following) => (
@@ -50,7 +50,7 @@ const FollowingPage = () => {
                             as={Link}
                             href={`/user/${following._id}`}
                         >
-                            View
+                            Xem
                         </Button>
                     </HStack>
                 ))}

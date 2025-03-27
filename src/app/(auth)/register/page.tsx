@@ -19,18 +19,19 @@ const Registerpage = () => {
     const router = useRouter();
     const toast = useToast();
     const [registerDetails, setRegisterDetails] = useState({
-        firstName: "",
-        lastName: "",
         username: "",
+        phoneNumber: "",
+        email: "",
         password: "",
         location: "",
         role: "",
     });
-    const [role, setRole] = useState("");
+    const [role, setRole] = useState<string>("");
 
     const [isLoading, setIsLoading] = useState(false);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        console.log("role", role);
         const { name, value } = e.currentTarget;
         setRegisterDetails((state) => ({
             ...state,
@@ -42,23 +43,21 @@ const Registerpage = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            // Gửi yêu cầu đăng ký người dùng
+            
             await registerUser({ ...registerDetails, role });
-        
-            // Reset dữ liệu sau khi đăng ký thành công
             setRegisterDetails({
-                firstName: "",
-                lastName: "",
                 username: "",
+                phoneNumber: "",
+                email: "",
                 password: "",
-                role: "",
                 location: "",
+                role: "",
             });
             setRole("");
         
             // Hiển thị thông báo thành công
             toast({
-                title: "Registration Complete",
+                title: "Đăng ký thành công",
                 status: "success",
                 isClosable: true,
                 duration: 3000,
@@ -73,7 +72,7 @@ const Registerpage = () => {
         
             // Lấy thông báo lỗi
             const errMessage =
-                error?.response?.data?.error?.message || "An error occurred";
+                error?.response?.data?.error?.message || "Xảy ra lỗi!";
         
             // Hiển thị thông báo lỗi
             toast({
@@ -134,23 +133,23 @@ const Registerpage = () => {
                             <Input
                                 type="text"
                                 placeholder="tên người dùng"
-                                name="firstName"
+                                name="username"
                                 onChange={handleInputChange}
                                 required
                             />
                             <Input
-                                type="text"
+                                type="number"
                                 placeholder="Số điện thoại"
-                                name="lastName"
+                                name="phoneNumber"
                                 onChange={handleInputChange}
                                 required
                             />
                         </HStack>
                         <Input
-                            type="text"
+                            type="email"
                             placeholder="email"
                             mb={4}
-                            name="username"
+                            name="email"
                             onChange={handleInputChange}
                             required
                         />
@@ -178,10 +177,10 @@ const Registerpage = () => {
                         >
                             <Stack direction="row" gap={4}>
                                 <Radio value="Buyer" isRequired>
-                                    Người mua
+                                🛒 Người mua
                                 </Radio>
                                 <Radio value="Seller" isRequired>
-                                    Người bán
+                                   🛍️ Người bán
                                 </Radio>
                             </Stack>
                         </RadioGroup>

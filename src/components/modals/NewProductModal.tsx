@@ -38,12 +38,13 @@ type NewProductModalProps = {
 
 export type NewProductType = {
     productName: string;
-    productImg: File;
+    productImg: [];
     description: string;
     category: string;
     price: any;
     stocks: any;
 };
+
 
 const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
     const queryClient = useQueryClient();
@@ -55,23 +56,38 @@ const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
     const products: ProductType[] | undefined = queryClient.getQueryData([
         "products",
     ]);
-    const categories = [
-        ...new Set(products?.map((product: ProductType) => product.category)),
-    ];
+    // const categories = [
+    //     ...new Set(products?.map((product: ProductType) => product.category)),
+    // ];
 
-    // upload img and display in the ui
-    const handleImgUpload = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target?.files?.[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-            setPreviewImage(reader.result as string);
-        };
+    
+const categories = ["Thời trang", "Điện tử", "Gia dụng", "Mỹ phẩm & Chăm sóc cá nhân","Sách & Văn phòng phẩm","Thực phẩm & Đồ uống","Đồ chơi & Mẹ & Bé","Thể thao & Dã ngoại","Xe máy, Ô tô & Xe đạp","Nhà cửa & Đời sống","Phụ kiện thời trang","Đồng hồ & Trang sức","Sức khỏe & Sắc đẹp","Voucher & Dịch vụ","Khác"];
+"use client";
+const [error, setError] = useState("");
+const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+const [previewImages, setPreviewImages] = useState<string[]>([]);
 
-        if (file) {
-            reader.readAsDataURL(file);
-            setValue("productImg", file);
-        }
-    };
+const handleImgUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setSelectedFiles(files); // Lưu file để gửi lên API
+
+    const imageUrls = files.map((file) => URL.createObjectURL(file));
+    setPreviewImages(imageUrls); // Lưu URL để hiển thị ảnh xem trước
+};
+
+    // // upload img and display in the ui
+    // const handleImgUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    //     const file = e.target?.files?.[0];
+    //     const reader = new FileReader();
+    //     reader.onload = () => {
+    //         setPreviewImage(reader.result as string);
+    //     };
+
+    //     if (file) {
+    //         reader.readAsDataURL(file);
+    //         setValue("productImg", file);
+    //     }
+    // };
 
     const newProductMutation = useMutation({
         mutationFn: addNewProduct,
@@ -79,7 +95,7 @@ const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
             queryClient.invalidateQueries({
                 queryKey: ["products", accountDetails?._id],
             });
-
+    
             toast({
                 title: "New product uploaded!",
                 status: "success",
@@ -89,11 +105,12 @@ const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
                 duration: 3000,
             });
             onClose();
-            setPreviewImage("");
+            setPreviewImages([]);
         },
         onError: (err: any) => {
             const errMessage =
-                err.response.data.error.message || "An error occured";
+                err?.response?.data?.error || "Có lỗi xảy ra, vui lòng thử lại!";
+    
             toast({
                 title: errMessage,
                 status: "error",
@@ -104,25 +121,28 @@ const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
             });
         },
     });
+    
 
     return (
         <Modal
             isOpen={isOpen}
             onClose={() => {
                 onClose();
-                setPreviewImage("");
+                setPreviewImages([]);
             }}
             size="3xl"
         >
             <form
-                onSubmit={handleSubmit((data) => {
+                 onSubmit={handleSubmit((data) => {
                     const formData = new FormData();
                     formData.set("productName", data.productName);
                     formData.set("description", data.description);
                     formData.set("price", data.price);
                     formData.set("stocks", data.stocks);
-                    formData.set("productImg", data.productImg);
-                    formData.set("category", data.category);
+                    selectedFiles.forEach((file) => {
+                        formData.append("productImg", file);
+                    });
+                    formData.set("category", "aaa");
 
                     newProductMutation.mutate(formData);
                 })}
@@ -133,39 +153,60 @@ const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
                     <ModalCloseButton />
                     <ModalBody>
                         <div className="w-full flex justify-center items-center gap-10">
-                            <VStack w="45%">
-                                <Image
-                                    w="full"
-                                    h="20rem"
-                                    objectFit="cover"
-                                    rounded="lg"
-                                    src={previewImage}
-                                    fallbackSrc="https://via.placeholder.com/400"
-                                    alt="Product preview"
-                                />
-                                <Button size="sm" w="full" colorScheme="blue">
-                                    <label
-                                        htmlFor="productImg-upload"
-                                        className="w-full"
-                                    >
-                                        Upload Product image
-                                    </label>
-                                    <input
-                                        onChange={handleImgUpload}
-                                        type="file"
-                                        accept="image/*"
-                                        id="productImg-upload"
-                                        className="hidden"
-                                        required
-                                    />
-                                </Button>
-                            </VStack>
+                        <VStack w="45%">
+
+
+
+    <HStack spacing={2} wrap="wrap">
+        {previewImages.length > 0 ? (
+            previewImages.map((image, index) => (
+                <Image
+                    key={index}
+                    w="full"
+                    h="20rem"
+                    objectFit="cover"
+                    rounded="lg"
+                    src={image}
+                    fallbackSrc="https://via.placeholder.com/400"
+                    alt={`Product preview ${index + 1}`}
+                />
+            ))
+        ) : (
+            <Image
+                w="full"
+                h="20rem"
+                objectFit="cover"
+                rounded="lg"
+                src="https://via.placeholder.com/400"
+                alt="Product preview"
+            />
+        )}
+    </HStack>
+
+
+    <Button size="sm" w="full" colorScheme="blue">
+        <label htmlFor="productImg-upload" className="w-full">
+            Tải ảnh lên
+        </label>
+        <input
+            onChange={handleImgUpload}
+            type="file"
+            accept="image/*"
+            id="productImg-upload"
+            className="hidden"
+            multiple  // Cho phép chọn nhiều ảnh
+            required
+        />
+    </Button>
+</VStack>
+
 
                             <VStack w="55%" spacing={0}>
-                                <FormLabel w="full">Product name:</FormLabel>
+                                <FormLabel w="full">Tên sản phẩm:
+                                </FormLabel>
                                 <Input
                                     type="text"
-                                    placeholder="Product name"
+                                    placeholder="Tên sản phẩm"
                                     autoComplete="off"
                                     required
                                     mb={2}
@@ -173,10 +214,10 @@ const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
                                         required: true,
                                     })}
                                 />
-                                <FormLabel w="full">Description:</FormLabel>
+                                <FormLabel w="full">Mô tả:</FormLabel>
                                 <Textarea
                                     height="10rem"
-                                    placeholder="Description"
+                                    placeholder="Mô tả sản phẩm"
                                     {...register("description", {
                                         required: true,
                                     })}
@@ -185,14 +226,14 @@ const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
                                 />
                                 <HStack w="full" mb={2}>
                                     <VStack spacing={0}>
-                                        <FormLabel w="full">Stocks:</FormLabel>
+                                        <FormLabel w="full">Số lượng trong kho:</FormLabel>
                                         <NumberInput
                                             size="md"
                                             defaultValue={1}
                                             min={1}
                                         >
                                             <NumberInputField
-                                                placeholder="Stocks"
+                                                placeholder="Số lượng trong kho"
                                                 {...register("stocks", {
                                                     required: true,
                                                     min: 1,
@@ -206,14 +247,14 @@ const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
                                     </VStack>
 
                                     <VStack spacing={0}>
-                                        <FormLabel w="full">Price:</FormLabel>
+                                        <FormLabel w="full">Giá:</FormLabel>
                                         <NumberInput
                                             size="md"
                                             defaultValue={1}
                                             min={1}
                                         >
                                             <NumberInputField
-                                                placeholder="Price"
+                                                placeholder="Giá"
                                                 {...register("price", {
                                                     required: true,
                                                     min: 1,
@@ -229,7 +270,7 @@ const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
 
                                 <FormLabel w="full">Category:</FormLabel>
                                 <Select
-                                    placeholder="- Product Category -"
+                                    placeholder="- Danh mục sản phẩm -"
                                     required
                                     mb={2}
                                     {...register("category", {
@@ -246,6 +287,9 @@ const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
                                             </option>
                                         )
                                     )}
+
+
+                                    
                                 </Select>
                             </VStack>
                         </div>
@@ -253,13 +297,13 @@ const NewProductModal = ({ isOpen, onClose }: NewProductModalProps) => {
 
                     <ModalFooter>
                         <Button
-                            isDisabled={!previewImage}
+                            isDisabled={!previewImages}
                             type="submit"
                             colorScheme="blue"
                             isLoading={newProductMutation?.isLoading}
                             spinnerPlacement="start"
                         >
-                            Create
+                            Tạo mới
                         </Button>
                     </ModalFooter>
                 </ModalContent>

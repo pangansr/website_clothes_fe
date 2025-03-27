@@ -73,7 +73,7 @@ const UserSettingsPage = () => {
             <div className="w-[40rem] flex flex-col items-center p-4 bg-white rounded-lg shadow">
                 <p className="w-full text-lg font-medium">Account Details</p>
                 <p className="w-full text-sm text-gray-700 mb-4">
-                    Manage and protect your account
+                    quản lý và bảo vệ tài khoản của bạn
                 </p>
                 <Divider />
                 <div className="w-[80%] flex flex-col items-center p-4 ">
@@ -84,7 +84,7 @@ const UserSettingsPage = () => {
                     >
                         <VStack mb={8}>
                             <Avatar
-                                name={accountDetails?.firstName}
+                                name={accountDetails?.username}
                                 size="xl"
                                 position="relative"
                             >
@@ -95,26 +95,26 @@ const UserSettingsPage = () => {
                         <HStack mb={4}>
                             <VStack spacing={0}>
                                 <FormLabel w="full" ml={4}>
-                                    First name:
+                                   Tên người dùng:
                                 </FormLabel>
                                 <Input
-                                    defaultValue={accountDetails?.firstName}
+                                    defaultValue={accountDetails?.username}
                                     type="text"
-                                    placeholder="First Name"
-                                    {...register("firstName", {
+                                    placeholder="username"
+                                    {...register("username", {
                                         required: true,
                                     })}
                                 />
                             </VStack>
                             <VStack spacing={0}>
                                 <FormLabel w="full" ml={4}>
-                                    Last name:
+                                    Số điện thoại:
                                 </FormLabel>
                                 <Input
-                                    defaultValue={accountDetails?.lastName}
+                                    defaultValue={accountDetails?.phoneNumber}
                                     type="text"
-                                    placeholder="Last Name"
-                                    {...register("lastName", {
+                                    placeholder="phoneNumber"
+                                    {...register("phoneNumber", {
                                         required: true,
                                     })}
                                 />
@@ -122,14 +122,14 @@ const UserSettingsPage = () => {
                         </HStack>
                         <VStack spacing={0}>
                             <FormLabel w="full" ml={4}>
-                                Username:
+                                Email:
                             </FormLabel>
                             <Input
                                 type="text"
-                                placeholder="Username"
-                                {...register("username", { required: true })}
+                                placeholder="email"
+                                {...register("email", { required: true })}
                                 mb={4}
-                                defaultValue={accountDetails?.username}
+                                defaultValue={accountDetails?.email}
                             />
                         </VStack>
 
@@ -140,20 +140,20 @@ const UserSettingsPage = () => {
                             colorScheme="blue"
                             isLoading={updateAccountDetailsMutation.isLoading}
                             isDisabled={
-                                watch().firstName ===
-                                    accountDetails?.firstName &&
-                                watch().lastName === accountDetails?.lastName &&
-                                watch().username === accountDetails?.username
+                                watch().username ===
+                                    accountDetails?.username &&
+                                watch().phoneNumber === accountDetails?.phoneNumber &&
+                                watch().email === accountDetails?.email
                             }
                         >
-                            Save Changes
+                           Lưu thay đổi
                         </Button>
                     </form>
                     <Link
                         href="/user/settings/password"
                         className="text-sm mt-4 text-blue-600 hover:underline"
                     >
-                        Change Password?
+                        Đổi mật khẩu
                     </Link>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 import axios from "axios";
+import  {apiBaseUrl} from "./config";
 
-const API: string = "http://localhost:5000/user";
+const API: string = apiBaseUrl+"/user";
 
 // fetch the details of the account user (logged in)
 export const fetchAccountDetails = async () => {
@@ -8,7 +9,7 @@ export const fetchAccountDetails = async () => {
 
         
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
         },
     });
 
@@ -16,9 +17,9 @@ export const fetchAccountDetails = async () => {
 };
 
 export type updateAccountDetailsType = {
-    firstName: string;
-    lastName: string;
     username: string;
+    phoneNumber: string;
+    email: string;
 };
 
 export const updateAccountDetails = async (
@@ -29,7 +30,7 @@ export const updateAccountDetails = async (
         details,
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+                Authorization: `Bearer ${localStorage.getItem("Token")}`,
             },
         }
     );
@@ -46,7 +47,7 @@ export const changeAccountPassword = async (details: {
         details,
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+                Authorization: `Bearer ${localStorage.getItem("Token")}`,
             },
         }
     );
@@ -58,7 +59,7 @@ export const changeAccountPassword = async (details: {
 export const fetchUserDetails = async (userId: string) => {
     const response = await axios.get(`${API}/details?userId=${userId}`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
         },
     });
 
@@ -68,7 +69,7 @@ export const fetchUserDetails = async (userId: string) => {
 export const getAllFollowers = async (userId: string) => {
     const response = await axios.get(`${API}/followers/list?userId=${userId}`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
         },
     });
     console.log("fffffffffffffffffffffffffff"+response.data.userId);
@@ -78,7 +79,7 @@ export const getAllFollowers = async (userId: string) => {
 export const getAllFollowing = async (userId: string) => {
     const response = await axios.get(`${API}/following/list?userId=${userId}`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
         },
     });
 
@@ -88,7 +89,7 @@ export const getAllFollowing = async (userId: string) => {
 export const followUser = async (userId: string) => {
     const response = await axios.post(`${API}/follow?userId=${userId}`, null, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
         },
     });
 
@@ -101,7 +102,7 @@ export const unfollowUser = async (userId: string) => {
         null,
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+                Authorization: `Bearer ${localStorage.getItem("Token")}`,
             },
         }
     );

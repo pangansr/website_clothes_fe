@@ -2,7 +2,7 @@ import jwtDecode from "jwt-decode";
 import refreshAccessToken from "../api/refreshToken";
 
 export const isTokenAvailable = async () => {
-    const token = localStorage.getItem("ookraToken");
+    const token = localStorage.getItem("Token");
 
     // No token
     if (!token) {
@@ -20,7 +20,7 @@ export const isTokenAvailable = async () => {
 
             if (newAccessToken) {
                 console.log("Token refresh");
-                localStorage.setItem("ookraToken", newAccessToken);
+                localStorage.setItem("Token", newAccessToken);
                 return true;
             } else {
                 // Refresh Token expired
@@ -34,7 +34,7 @@ export const isTokenAvailable = async () => {
 
         if (newAccessToken) {
             console.log("Token refresh");
-            localStorage.setItem("ookraToken", newAccessToken);
+            localStorage.setItem("Token", newAccessToken);
             return true;
         } else {
             // Refresh Token expired

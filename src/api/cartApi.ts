@@ -1,11 +1,12 @@
 import axios from "axios";
+import  {apiBaseUrl} from "./config";
 
-const API = "http://localhost:5000/cart";
+const API = apiBaseUrl+"/cart";
 
 export const getCartItems = async () => {
     const response = await axios.get(`${API}/all`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
         },
     });
 
@@ -15,7 +16,7 @@ export const getCartItems = async () => {
 export const clearCart = async () => {
     const response = await axios.delete(`${API}/remove/all`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
         },
     });
 
@@ -23,17 +24,34 @@ export const clearCart = async () => {
 };
 
 export const addToCart = async (productId: string, quantity: number) => {
-    const response = await axios.post(
-        `${API}/add?productId=${productId}`,
-        { quantity },
-        {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
-            },
-        }
-    );
+    try {
+        const response = await axios.post(
+            `${API}/add?productId=${productId}`,
+            
+            { quantity },   
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("Token")}`,
+                },
+            }
+        );
+        console.log("quantity", quantity);
+        console.log("productId", productId);
+        return response.data;
+    } catch (error: any) {
+        console.error("Lỗi FE khi gọi API addToCart:", error);
 
-    return response.data;
+        if (error.response) {
+        
+            throw new Error(error.response.data.error || "Lỗi từ server.");
+        } else if (error.request) {
+            // 📌 Không có phản hồi từ server (server có thể đã bị down)
+            throw new Error("Không thể kết nối đến server.");
+        } else {
+            // 📌 Lỗi xảy ra khi thiết lập request
+            throw new Error("Lỗi không xác định.");
+        }
+    }
 };
 
 export const removeToCart = async (productId: string) => {
@@ -41,7 +59,7 @@ export const removeToCart = async (productId: string) => {
         `${API}/remove?productId=${productId}`,
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+                Authorization: `Bearer ${localStorage.getItem("Token")}`,
             },
         }
     );
@@ -55,7 +73,7 @@ export const cartCheckout = async (userId: string) => {
         null,
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+                Authorization: `Bearer ${localStorage.getItem("Token")}`,
             },
         }
     );

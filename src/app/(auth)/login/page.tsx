@@ -9,7 +9,7 @@ import { useState, FormEvent, useEffect } from "react";
 const LoginPage = () => {
     const router = useRouter();
     const toast = useToast();
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
@@ -17,10 +17,10 @@ const LoginPage = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            await loginUser({ username, password });
+            await loginUser({ email, password });
 
             toast({
-                title: "Login Success",
+                title: "Đăng nhập thành công",
                 status: "success",
                 isClosable: true,
                 duration: 3000,
@@ -31,7 +31,7 @@ const LoginPage = () => {
         } catch (error: any) {
             console.log(error);
             toast({
-                title: "Wrong username or password",
+                title: "Sai thông tin đăng nhập",
                 status: "error",
                 isClosable: true,
                 duration: 3000,
@@ -88,8 +88,8 @@ const LoginPage = () => {
                             placeholder="Email"
                             mb={4}
                             name="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                         <Input

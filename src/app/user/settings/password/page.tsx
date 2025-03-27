@@ -64,7 +64,7 @@ const PasswordSettingsPage = () => {
             <div className="w-[40rem] flex flex-col items-center p-4 bg-white rounded-lg shadow">
                 <p className="w-full text-lg font-medium">Change Password</p>
                 <p className="w-full text-sm text-gray-700 mb-4">
-                    Manage and protect your account
+                    Quản lý và bảo vệ tài khoản của bạn
                 </p>
                 <Divider />
                 <div className="w-full flex flex-col items-center p-4 ">

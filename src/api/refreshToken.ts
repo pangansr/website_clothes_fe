@@ -1,8 +1,9 @@
 import axios from "axios";
+import  {apiBaseUrl} from "./config";
 
 const refreshAccessToken = async () => {
     try {
-        const response = await axios.get("http://localhost:5000/auth/refresh", {
+        const response = await axios.get(apiBaseUrl+"/auth/refresh", {
             withCredentials: true,
         });
 

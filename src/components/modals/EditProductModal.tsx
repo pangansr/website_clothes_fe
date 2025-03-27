@@ -25,6 +25,7 @@ import {
     NumberDecrementStepper,
     FormLabel,
 } from "@chakra-ui/react";
+import SelectReact from "react-select";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -34,7 +35,7 @@ import { isTokenAvailable } from "@/src/utils/checkAccessToken";
 
 export type EditProductType = {
     productName: string;
-    productImg: File;
+    productImg: [];
     description: string;
     category: string;
     price: any;
@@ -56,32 +57,30 @@ const EditProductModal = ({
     const toast = useToast();
     const pathname = usePathname();
     const router = useRouter();
-    const [previewImage, setPreviewImage] = useState(
-        productData?.productImg?.url
-    );
+   
     const { register, handleSubmit, setValue } = useForm<EditProductType>();
 
     const accountDetails = useUserStore((state) => state.accountDetails);
     const products: ProductType[] | undefined = queryClient.getQueryData([
         "products",
     ]);
-    const categories = [
-        ...new Set(products?.map((product: ProductType) => product.category)),
-    ];
+    // const categories = [
+    //     ...new Set(products?.map((product: ProductType) => product.category)),
+    // ];
+const categories = ["Thời trang", "Điện tử", "Gia dụng", "Mỹ phẩm & Chăm sóc cá nhân","Sách & Văn phòng phẩm","Thực phẩm & Đồ uống","Đồ chơi & Mẹ & Bé","Thể thao & Dã ngoại","Xe máy, Ô tô & Xe đạp","Nhà cửa & Đời sống","Phụ kiện thời trang","Đồng hồ & Trang sức","Sức khỏe & Sắc đẹp","Voucher & Dịch vụ","Khác"];
+"use client";
 
-    // upload img and display in the ui
-    const handleImgUpload = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target?.files?.[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-            setPreviewImage(reader.result as string);
-        };
+const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+const [previewImages, setPreviewImages] = useState<string[]>([]);
 
-        if (file) {
-            reader.readAsDataURL(file);
-            setValue("productImg", file);
-        }
-    };
+const handleImgUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setSelectedFiles(files); // Lưu file để gửi lên API
+
+    const imageUrls = files.map((file) => URL.createObjectURL(file));
+    setPreviewImages(imageUrls); // Lưu URL để hiển thị ảnh xem trước
+};
+
 
     const newProductMutation = useMutation({
         mutationFn: (formData: FormData) =>
@@ -100,7 +99,7 @@ const EditProductModal = ({
                 duration: 3000,
             });
             onClose();
-            setPreviewImage("");
+            setPreviewImages([]);
         },
         onError: (err: any) => {
             const errMessage =
@@ -121,7 +120,7 @@ const EditProductModal = ({
             isOpen={isOpen}
             onClose={() => {
                 onClose();
-                setPreviewImage(productData?.productImg?.url);
+                setPreviewImages([]);
             }}
             size="3xl"
         >
@@ -132,7 +131,9 @@ const EditProductModal = ({
                     formData.set("description", data.description);
                     formData.set("price", data.price);
                     formData.set("stocks", data.stocks);
-                    formData.set("productImg", data.productImg);
+                    selectedFiles.forEach((file) => {
+                        formData.append("productImg", file);
+                    });
                     formData.set("category", data.category);
 
                     newProductMutation.mutate(formData);
@@ -145,30 +146,47 @@ const EditProductModal = ({
                     <ModalBody>
                         <div className="w-full flex justify-center items-center gap-10">
                             <VStack w="45%">
-                                <Image
-                                    w="full"
-                                    h="20rem"
-                                    objectFit="cover"
-                                    rounded="lg"
-                                    src={previewImage}
-                                    fallbackSrc="https://via.placeholder.com/400"
-                                    alt="Product preview"
-                                />
-                                <Button size="sm" w="full" colorScheme="blue">
-                                    <label
-                                        htmlFor="productImg-upload"
-                                        className="w-full"
-                                    >
-                                        Upload Product image
-                                    </label>
-                                    <input
-                                        onChange={handleImgUpload}
-                                        type="file"
-                                        accept="image/*"
-                                        id="productImg-upload"
-                                        className="hidden"
-                                    />
-                                </Button>
+                            <HStack spacing={2} wrap="wrap">
+        {previewImages.length > 0 ? (
+            previewImages.map((image, index) => (
+                <Image
+                    key={index}
+                    w="full"
+                    h="20rem"
+                    objectFit="cover"
+                    rounded="lg"
+                    src={image}
+                    fallbackSrc="https://via.placeholder.com/400"
+                    alt={`Product preview ${index + 1}`}
+                />
+            ))
+        ) : (
+            <Image
+                w="full"
+                h="20rem"
+                objectFit="cover"
+                rounded="lg"
+                src="https://via.placeholder.com/400"
+                alt="Product preview"
+            />
+        )}
+    </HStack>
+
+
+    <Button size="sm" w="full" colorScheme="blue">
+        <label htmlFor="productImg-upload" className="w-full">
+            Tải ảnh lên
+        </label>
+        <input
+            onChange={handleImgUpload}
+            type="file"
+            accept="image/*"
+            id="productImg-upload"
+            className="hidden"
+            multiple  // Cho phép chọn nhiều ảnh
+            required
+        />
+    </Button>
                             </VStack>
 
                             <VStack w="55%" spacing={0}>
@@ -266,7 +284,7 @@ const EditProductModal = ({
 
                     <ModalFooter>
                         <Button
-                            isDisabled={!previewImage}
+                            isDisabled={!previewImages}
                             type="submit"
                             colorScheme="blue"
                             isLoading={newProductMutation?.isLoading}

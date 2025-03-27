@@ -1,17 +1,12 @@
 import axios from "axios";
+import  {apiBaseUrl} from "./config";
 
-const API: string = "http://localhost:5000/product";
+const API: string = apiBaseUrl+"/product";
 
 export const searchProducts = async (productName: string) => {
     const response = await axios.get(
         `${API}/search?productName=${productName}`,
-        {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
-            },
-        }
     );
-
     return response.data;
 };
 
@@ -27,19 +22,22 @@ export const getSellerProducts = async (sellerId: string) => {
 };
 
 export const getSingleProduct = async (productId: string) => {
-    const response = await axios.get(`${API}?productId=${productId}`, {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
-        },
-    });
-console.log("dataPro",response.data);
+
+
+    if (!productId) {
+        throw new Error("❌ productId không hợp lệ");
+    }
+
+    const response = await axios.get(`${API}/${productId}`);
+
     return response.data;
 };
+
 
 export const addNewProduct = async (productInfo: FormData) => {
     const response = await axios.post(`${API}/new`, productInfo, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
         },
     });
 
@@ -51,7 +49,7 @@ export const removeProduct = async (productId: string) => {
         `${API}/remove?productId=${productId}`,
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+                Authorization: `Bearer ${localStorage.getItem("Token")}`,
             },
         }
     );
@@ -68,7 +66,7 @@ export const updateProductDetails = async (
         productInfo,
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("ookraToken")}`,
+                Authorization: `Bearer ${localStorage.getItem("Token")}`,
             },
         }
     );
